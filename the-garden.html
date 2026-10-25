@@ -400,7 +400,7 @@ footer a{color:#b9b2a2}
 </footer>
 
 <div id="lightbox"><img id="lbImg" src="" alt="Chapter artwork, enlarged"></div>
-<button id="sndBtn" aria-label="Toggle ambient sound">SOUND &middot; OFF</button>
+<button id="sndBtn" class="on" aria-label="Toggle ambient sound">SOUND &middot; ON</button>
 
 <script>
 var CHARS = [
@@ -462,7 +462,7 @@ document.querySelectorAll(".chart").forEach(function(im) {
 });
 lb.addEventListener("click", function() { lb.style.display = "none"; });
 /* ominous ambient - synthesized live in the browser, no audio file */
-var AC = null, master = null, sndOn = false, sndTimers = [];
+var AC = null, master = null, sndOn = false, sndDesired = true, sndTimers = [];
 var sndBtn = document.getElementById("sndBtn");
 function padLoop() {
   var chords = [[220, 261.63, 329.63], [174.61, 220, 261.63], [196, 246.94, 293.66], [164.81, 196, 246.94]];
@@ -528,16 +528,17 @@ function sndStart() {
   AC.resume();
   master.gain.cancelScheduledValues(AC.currentTime);
   master.gain.setTargetAtTime(0.14, AC.currentTime, 2.2);
-  sndOn = true; sndBtn.classList.add("on"); sndBtn.innerHTML = "SOUND &middot; ON";
+  sndOn = true; sndDesired = true; sndBtn.classList.add("on"); sndBtn.innerHTML = "SOUND &middot; ON";
 }
 function sndStop() {
   if (!AC) return;
   master.gain.setTargetAtTime(0, AC.currentTime, 0.6);
-  sndOn = false; sndBtn.classList.remove("on"); sndBtn.innerHTML = "SOUND &middot; OFF";
+  sndOn = false; sndDesired = false; sndBtn.classList.remove("on"); sndBtn.innerHTML = "SOUND &middot; OFF";
 }
-sndBtn.addEventListener("click", function(e) { e.stopPropagation(); if (sndOn) sndStop(); else sndStart(); });
-function wake(e) { if (e && e.target === sndBtn) return; if (!sndOn) sndStart(); removeEventListener("pointerdown", wake); removeEventListener("keydown", wake); }
-addEventListener("pointerdown", wake); addEventListener("keydown", wake);
+sndBtn.addEventListener("click", function(e) { e.stopPropagation(); if (sndDesired) sndStop(); else sndStart(); });
+function wake(e) { if (e && e.target === sndBtn) return; if (sndDesired) sndStart(); ["pointerdown", "keydown", "wheel", "touchstart"].forEach(function(ev) { removeEventListener(ev, wake); }); }
+["pointerdown", "keydown", "wheel", "touchstart"].forEach(function(ev) { addEventListener(ev, wake, {passive: true}); });
+sndStart();
 </script>
 </body>
 </html>
