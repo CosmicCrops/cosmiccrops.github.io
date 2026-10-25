@@ -640,8 +640,8 @@ function sndStop() {
   sndOn = false; sndDesired = false; sndBtn.classList.remove("on"); sndBtn.innerHTML = "SOUND &middot; OFF";
 }
 sndBtn.addEventListener("click", function(e) { e.stopPropagation(); if (sndDesired) sndStop(); else sndStart(); });
-function wake(e) { if (e && e.target === sndBtn) return; if (sndDesired) sndStart(); ["pointerdown", "keydown", "wheel", "touchstart"].forEach(function(ev) { removeEventListener(ev, wake); }); }
-["pointerdown", "keydown", "wheel", "touchstart"].forEach(function(ev) { addEventListener(ev, wake, {passive: true}); });
+function wake(e) { if (e && e.target === sndBtn) return; if (sndDesired) sndStart(); ["pointerdown", "keydown", "wheel", "touchstart", "scroll", "mousedown", "touchend"].forEach(function(ev) { removeEventListener(ev, wake); }); }
+["pointerdown", "keydown", "wheel", "touchstart", "scroll", "mousedown", "touchend"].forEach(function(ev) { addEventListener(ev, wake, {passive: true}); });
 sndStart();
 </script>
 </body>
