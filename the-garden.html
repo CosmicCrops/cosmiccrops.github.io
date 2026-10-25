@@ -639,10 +639,12 @@ function sndStop() {
   master.gain.setTargetAtTime(0, AC.currentTime, 0.6);
   sndOn = false; sndDesired = false; sndBtn.classList.remove("on"); sndBtn.innerHTML = "SOUND &middot; OFF";
 }
-sndBtn.addEventListener("click", function(e) { e.stopPropagation(); if (sndDesired) sndStop(); else sndStart(); });
+sndBtn.addEventListener("click", function(e) { e.stopPropagation(); if (AC && AC.state === "running" && sndOn) sndStop(); else sndStart(); });
 function wake(e) { if (e && e.target === sndBtn) return; if (sndDesired) sndStart(); ["pointerdown", "keydown", "wheel", "touchstart", "scroll", "mousedown", "touchend"].forEach(function(ev) { removeEventListener(ev, wake); }); }
 ["pointerdown", "keydown", "wheel", "touchstart", "scroll", "mousedown", "touchend"].forEach(function(ev) { addEventListener(ev, wake, {passive: true}); });
 sndStart();
+setInterval(function() { if (sndDesired && AC && AC.state === "suspended") AC.resume(); }, 1500);
+document.addEventListener("visibilitychange", function() { if (!document.hidden && sndDesired && AC && AC.state === "suspended") AC.resume(); });
 </script>
 </body>
 </html>
