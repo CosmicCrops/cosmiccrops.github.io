@@ -108,9 +108,34 @@ footer a{color:#b9b2a2}
  .dots{display:none}
  .panel img{flex-basis:100%;height:300px}
 }
+/* ENTRY GATE */
+#gate { position: fixed; inset: 0; z-index: 80; background: radial-gradient(120% 90% at 50% 8%, #131b14 0%, #060a07 55%, #000000 100%); display: flex; align-items: center; justify-content: center; text-align: center; padding: 24px; cursor: pointer; transition: opacity .9s ease, visibility .9s ease; }
+#gate.gone { opacity: 0; visibility: hidden; pointer-events: none; }
+.gate-inner { max-width: 660px; animation: gateIn 1.4s ease both; }
+@keyframes gateIn { from { opacity: 0; filter: blur(10px); transform: translateY(14px); } to { opacity: 1; filter: blur(0); transform: none; } }
+.gate-kick { letter-spacing: .38em; font-size: 11px; color: #9fb4a4; margin: 0; }
+.gate-title { font-family: Georgia, 'Times New Roman', serif; font-size: clamp(54px, 11vw, 108px); letter-spacing: .06em; color: #ece7d9; margin: 12px 0 8px; line-height: 1; }
+.gate-hook { font-style: italic; color: #c9cfc4; font-size: clamp(15px, 2.4vw, 19px); margin: 0; }
+#enterBtn { margin-top: 34px; background: transparent; color: #ece7d9; border: 1px solid #7d8f80; padding: 15px 36px; letter-spacing: .28em; font-size: 13px; font-family: Georgia, 'Times New Roman', serif; cursor: pointer; animation: gatePulse 2.2s ease-in-out infinite; }
+#enterBtn:hover { background: #1a241c; }
+@keyframes gatePulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(159,180,164,0); } 50% { box-shadow: 0 0 26px 2px rgba(159,180,164,.28); } }
+.gate-note { margin-top: 18px; font-size: 11px; letter-spacing: .14em; color: #7d8f80; }
+body.gate-locked { overflow: hidden; }
+body:not(.entered) .hero-in { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { #gate { transition: none; } #enterBtn, .gate-inner { animation: none; } }
 </style>
+<noscript><style>#gate{display:none}</style></noscript>
 </head>
-<body>
+<body class="gate-locked">
+<div id="gate">
+  <div class="gate-inner">
+    <p class="gate-kick">A NOVEL BY JOHN DANK</p>
+    <h1 class="gate-title">THE GARDEN</h1>
+    <p class="gate-hook">The lights didn’t just go out in Atlanta; the future did…</p>
+    <button id="enterBtn" type="button">ENTER &middot; SOUND ON</button>
+    <p class="gate-note">HEADPHONES RECOMMENDED &middot; AN ADULT STORY</p>
+  </div>
+</div>
 <div id="vine"></div>
 <div id="grain"></div>
 <header class="topbar">
@@ -599,6 +624,16 @@ sndBtn.addEventListener("click", function(e) { e.stopPropagation(); if (sndDesir
 function wake(e) { if (e && e.target === sndBtn) return; if (sndDesired) sndStart(); ["pointerdown", "keydown", "wheel", "touchstart"].forEach(function(ev) { removeEventListener(ev, wake); }); }
 ["pointerdown", "keydown", "wheel", "touchstart"].forEach(function(ev) { addEventListener(ev, wake, {passive: true}); });
 sndStart();
+var gate = document.getElementById("gate");
+function enterGate() {
+  if (document.body.classList.contains("entered")) return;
+  document.body.classList.add("entered");
+  document.body.classList.remove("gate-locked");
+  sndStart();
+  gate.classList.add("gone");
+  setTimeout(function() { gate.style.display = "none"; }, 1000);
+}
+if (gate) gate.addEventListener("click", enterGate);
 </script>
 </body>
 </html>
